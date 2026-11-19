@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Bookshelf</string>
+    <string name="bookshelf_title">Libros sobre jazz</string>
+    <string name="books_loading">Cargando libros…</string>
+    <string name="books_error">No se pudieron cargar los libros.</string>
+    <string name="books_empty">No se encontraron libros.</string>
+    <string name="cover_url_unavailable">No se encontró una URL de portada.</string>
+    <string name="retry">Reintentar</string>
+    <string name="first_book_cover_url_label">URL de la primera portada:</string>
+</resources>
