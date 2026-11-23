@@ -1,8 +1,10 @@
 package com.example.bookshelf.ui
 
-// Paso 1: definir los estados que verá la pantalla; la lista de libros se mantiene aparte.
+import com.example.bookshelf.model.Book
+
 data class BookshelfUiState(
-    val status: BookshelfStatus = BookshelfStatus.LOADING
+    val status: BookshelfStatus = BookshelfStatus.LOADING,
+    val books: List<Book> = emptyList()
 )
 
 enum class BookshelfStatus {
