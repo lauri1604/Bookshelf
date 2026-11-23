@@ -1,14 +1,24 @@
 package com.example.bookshelf.ui.screens
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,12 +48,20 @@ fun BookshelfRoute(modifier: Modifier = Modifier) {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun BookshelfScreen(
     uiState: BookshelfUiState,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(text = stringResource(R.string.app_name)) }
+            )
+        }
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -84,21 +102,48 @@ private fun ErrorContent(onRetry: () -> Unit) {
 
 @Composable
 private fun BooksContent(books: List<Book>) {
-    val firstBookWithCover = books.firstOrNull { it.coverUrl != null }
-    if (firstBookWithCover == null) {
+    if (books.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = stringResource(
-                    if (books.isEmpty()) R.string.books_empty else R.string.cover_url_unavailable
-                )
-            )
+            Text(text = stringResource(R.string.books_empty))
         }
-    } else {
-        AsyncImage(
-            model = firstBookWithCover.coverUrl,
-            contentDescription = firstBookWithCover.title,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.fillMaxSize()
-        )
+        return
+    }
+
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 140.dp),
+        contentPadding = PaddingValues(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(books, key = { it.key }) { book ->
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column {
+                    if (book.coverUrl != null) {
+                        AsyncImage(
+                            model = book.coverUrl,
+                            contentDescription = book.title,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(2f / 3f)
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(2f / 3f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = stringResource(R.string.cover_url_unavailable))
+                        }
+                    }
+                    Text(
+                        text = book.title,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
+            }
+        }
     }
 }
